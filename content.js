@@ -89,11 +89,29 @@ async function generateContextCard(word, context) {
     }
 
     const meaning = data.candidates[0].content.parts[0].text;
-    //showCard(word, extractSentence(cleanContext), meaning);
+    showCard(word, extractSentence(cleanContext, word), meaning);
 }
 
-function extractSentence(context) {
+function extractSentence(paragraph, word) {
+    const sentences = paragraph.split(/(?<=[.!?])\s+/);
+    const match = sentences.find(s => s.toLowerCase().includes(word.toLowerCase()));
 
+    if (match) {
+        if (match.length > 200) {
+            const index = match.toLowerCase().indexOf(word.toLowerCase());
+            const start = Math.max(0, index - 60);
+            const actualStart = start === 0 ? 0 : paragraph.indexOf(' ', start) + 1;
+            const end = Math.min(match.length, index + word.length + 60);
+            return (actualStart > 0 ? '...' : "") + match.slice(actualStart, end) + (end < match.length ? '...' : '');
+        }
+        return match;
+    }
+    
+    const index = paragraph.toLowerCase().indexOf(word.toLowerCase());
+    const start = Math.max(0, index - 60);
+    const actualStart = start === 0 ? 0 : paragraph.indexOf(' ', start) + 1;
+    const end = Math.min(paragraph.length, index + word.length + 60);
+    return (actualStart > 0 ? '...' : "") + paragraph.slice(actualStart, end) + (end < paragraph.length ? '...' : '');
 }
 
 function showLoadingCard(word) {
@@ -147,5 +165,42 @@ function showLoadingCard(word) {
 }
 
 function showCard(word, sentence, meaning) {
+    const card = document.getElementById('contextcard-card');
+    if (!card) return
 
+    const boldedSentence = sentence.replace(
+        new RegExp(`(${word})`, "gi"),
+        `<span style="font-weight:600; color:#111;">$1</span>`
+    );
+
+    card.innerHTML = `
+        <button id="cc-close-btn">✕</button>
+        <p class="cc-label">Word</p>
+        <p class="cc-word">${word}</p>
+        <p class="cc-label">Original sentence</p>
+        <p class="cc-sentence">${boldedSentence}</p>
+        <p class="cc-label">Meaning in context</p>
+        <p class="cc-meaning">${meaning}</p>
+        <button id="cc-save-btn">Save card</button>`;
+    
+    card.querySelectorAll(".cc-label").forEach(el => {
+        el.style.cssText = `font-size:10px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px;`;
+    });
+    card.querySelector(".cc-word").style.cssText = `font-size:22px; font-weight:500; color:#111; margin:0 0 14px;`;
+    card.querySelector(".cc-sentence").style.cssText = `font-size:13px; color:#555; line-height:1.6; margin:0 0 14px; border-left:2px solid #ddd; padding-left:10px;`;
+    card.querySelector(".cc-meaning").style.cssText = `font-size:13px; color:#111; line-height:1.6; margin:0 0 16px;`;
+
+    const saveBtn = card.querySelector("#cc-save-btn");
+    saveBtn.style.cssText = `width:100%; padding:8px; font-size:13px; border-radius:8px; background:white; border:0.5px solid #ccc; color:#111; cursor:pointer;`;
+    saveBtn.addEventListener("click", () => console.log("save clicked"));
+
+    const closeBtn = card.querySelector('#cc-close-btn');
+    closeBtn.style.cssText = `position:absolute; top:10px; right:12px; background:none; border:none; font-size:14px; color:#999; cursor:pointer;`;
+    closeBtn.addEventListener('click', () => card.remove());
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            card.style.maxHeight = '300px';
+        });
+    });
 }
