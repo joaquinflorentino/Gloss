@@ -127,7 +127,7 @@ function showLoadingCard(word) {
     const card = document.createElement('div');
     card.id = 'contextcard-card';
     card.innerHTML = `
-        <button id="cc-close-btn">✕</button>
+        <button id="cc-close-btn">&times;</button>
         <p class="cc-word" style="font-size:22px; font-weight:500; color:#111; margin: 0 0 4px;">${word}</p>
         <p id="cc-loading-text" style="font-size:13px; color:#999; margin:0;">Generating...</p>
     `;
@@ -157,7 +157,7 @@ function showLoadingCard(word) {
         right: 12px;
         background: none;
         border: none;
-        font-size: 14px;
+        font-size: 25px;
         color: #999;
         cursor: pointer;
     `;
@@ -174,7 +174,7 @@ function showCard(word, sentence, meaning) {
     );
 
     card.innerHTML = `
-        <button id="cc-close-btn">✕</button>
+        <button id="cc-close-btn">&times;</button>
         <p class="cc-label">Word</p>
         <p class="cc-word">${word}</p>
         <p class="cc-label">Original sentence</p>
@@ -213,7 +213,7 @@ function showCard(word, sentence, meaning) {
     });
 
     const closeBtn = card.querySelector('#cc-close-btn');
-    closeBtn.style.cssText = `position:absolute; top:10px; right:12px; background:none; border:none; font-size:14px; color:#999; cursor:pointer;`;
+    closeBtn.style.cssText = `position:absolute; top:10px; right:12px; background:none; border:none; font-size:25px; color:#999; cursor:pointer;`;
     closeBtn.addEventListener('click', () => card.remove());
 
     requestAnimationFrame(() => {

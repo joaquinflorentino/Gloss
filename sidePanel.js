@@ -23,17 +23,34 @@ function renderCards() {
 
     container.innerHTML = '';
     filtered.forEach(card => {
+        const boldedSentence = card.sentence.replace(
+            new RegExp(`(${card.word})`, "gi"),
+            `<span style="font-weight:600; color:#111;">$1</span>`
+        );
         const el = document.createElement('div');
         el.className = 'card';
         el.innerHTML = `
             <p class="label">Word</p>
             <p class="word">${card.word}</p>
             <p class="label">Original sentence</p>
-            <p class="sentence">${card.sentence}</p>
+            <p class="sentence">${boldedSentence}</p>
             <p class="label">Meaning in context</p>
             <p class="meaning">${card.meaning}</p>
             <p class="source">${card.source}</p>
+            <button class="delete-btn" data-word="${card.word}" data-timestamp="${card.timestamp}">&times;</button>
         `;
         container.appendChild(el);
-    })
+
+        el.querySelector('.delete-btn').addEventListener('click', () => {
+        allCards = allCards.filter(c => c.timestamp !== card.timestamp);
+        chrome.storage.local.set({ cards: allCards }, renderCards);
+    });
+    });
 }
+
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.cards) {
+        allCards = changes.cards.newValue || [];
+        renderCards();
+    }
+});
