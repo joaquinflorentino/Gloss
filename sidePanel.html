@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ContextCard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: sans-serif; background: #f9f9f9; padding: 16px; }
+    h1 { font-size: 16px; font-weight: 500; color: #111; margin-bottom: 12px; }
+    .controls { display: flex; gap: 8px; margin-bottom: 16px; }
+    input {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 13px;
+      border: 0.5px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      background: white;
+    }
+    input:focus { border-color: #aaa; }
+    select {
+      padding: 7px 10px;
+      font-size: 13px;
+      border: 0.5px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+    .card {
+      background: white;
+      border: 0.5px solid #ddd;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 12px;
+    }
+    .label { font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px; }
+    .word { font-size: 18px; font-weight: 500; color: #111; margin: 0 0 12px; }
+    .sentence { font-size: 12px; color: #555; line-height: 1.6; margin: 0 0 12px; border-left: 2px solid #ddd; padding-left: 10px; }
+    .meaning { font-size: 12px; color: #111; line-height: 1.6; margin: 0 0 12px; }
+    .source { font-size: 11px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .empty { font-size: 13px; color: #999; text-align: center; margin-top: 40px; }
+  </style>
+</head>
+<body>
+  <h1>Saved cards</h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search words..." />
+    <select id="sort">
+      <option value="newest">Newest</option>
+      <option value="oldest">Oldest</option>
+    </select>
+  </div>
+  <div id="cards-container"></div>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

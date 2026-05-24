@@ -192,7 +192,25 @@ function showCard(word, sentence, meaning) {
 
     const saveBtn = card.querySelector("#cc-save-btn");
     saveBtn.style.cssText = `width:100%; padding:8px; font-size:13px; border-radius:8px; background:white; border:0.5px solid #ccc; color:#111; cursor:pointer;`;
-    saveBtn.addEventListener("click", () => console.log("save clicked"));
+    saveBtn.addEventListener("click", () => {
+        const cardData = {
+            word,
+            sentence,
+            meaning,
+            source: window.location.href,
+            timestamp: Date.now()
+        };
+
+        chrome.storage.local.get("cards", (result) => {
+            const cards = result.cards || [];
+            cards.push(cardData);
+            chrome.storage.local.set({ cards }, () => {
+                saveBtn.textContent = "Saved ✓";
+                saveBtn.style.color = "#4f8ef7";
+                saveBtn.disabled = true;
+            });
+        });
+    });
 
     const closeBtn = card.querySelector('#cc-close-btn');
     closeBtn.style.cssText = `position:absolute; top:10px; right:12px; background:none; border:none; font-size:14px; color:#999; cursor:pointer;`;
