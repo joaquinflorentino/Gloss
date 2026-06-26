@@ -1,8 +1,26 @@
 let allCards = [];
+const toggleBtn = document.getElementById('gloss-toggle');
 
 chrome.storage.local.get('cards', (result) => {
     allCards = result.cards || [];
     renderCards();
+});
+
+toggleBtn.addEventListener('click', () => {
+    chrome.storage.local.get('glossActive', (result) => {
+        const current = result.glossActive !== false;
+        const next = !current;
+        chrome.storage.local.set({ glossActive: next }, () => {
+            toggleBtn.textContent = next ? 'Gloss: On' : 'Gloss: Off';
+            toggleBtn.style.color = next ? '#111' : '#999';
+        });
+    });
+});
+
+chrome.storage.local.get('glossActive', (result) => {
+    const active = result.glossActive !== false;
+    toggleBtn.textContent = active ? 'Gloss: On' : 'Gloss: Off';
+    toggleBtn.style.color = active ? '#111' : '#999';
 });
 
 document.getElementById('search').addEventListener('input', renderCards);

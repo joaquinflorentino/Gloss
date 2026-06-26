@@ -1,10 +1,8 @@
 const tooltip = document.createElement('div');
 tooltip.id = 'gloss-tooltip';
-tooltip.innerHTML = `<button id="gencard-btn">Generate Card</button>`
+tooltip.innerHTML = `<button id="gencard-btn">✦ Generate Card</button>`
 tooltip.style.cssText = `
     position: absolute;
-    padding: 6px 12px;
-    font-size: 14px;
     font-family: sans-serif;
     z-index: 999999;
     display: none;`;
@@ -15,34 +13,38 @@ genCardBtn.style.cssText = `
     background: #4f8ef7;
     color: white;
     border: none;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 13px;`;
+    font-size: 13px;
+    font-weight: bold`;
 
 let selectionActive = false;
 
 document.addEventListener('mouseup', (e) => {
-    if (tooltip.contains(e.target)) {
-        hideTooltip();
-        return;
-    }
-    if (document.getElementById('contextcard-card')?.contains(e.target)) return;
+    chrome.storage.local.get('glossActive', (result) => {
+        if (!result.glossActive) return;
+        if (tooltip.contains(e.target)) {
+            hideTooltip();
+            return;
+        }
+        if (document.getElementById('contextcard-card')?.contains(e.target)) return;
 
-    const selected = window.getSelection().toString().trim();
-    if (selected.length > 2 && selected.split(' ').length < 16 && !selectionActive) {
-        const range = window.getSelection().getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        const x = rect.left + window.scrollX + (rect.width / 2);
-        const y = rect.bottom + window.scrollY;
-        showTooltip(x, y);
+        const selected = window.getSelection().toString().trim();
+        if (selected.length > 2 && selected.split(' ').length < 16 && !selectionActive) {
+            const range = window.getSelection().getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const x = rect.left + window.scrollX + (rect.width / 2);
+            const y = rect.bottom + window.scrollY;
+            showTooltip(x, y);
 
-        selectionActive = true;
-    }
-    else {
-        hideTooltip();
-        selectionActive = false;
-    }
+            selectionActive = true;
+        }
+        else {
+            hideTooltip();
+            selectionActive = false;
+        }
+    })
 });
 
 genCardBtn.addEventListener('click', () => {
@@ -57,7 +59,7 @@ genCardBtn.addEventListener('click', () => {
 
 function showTooltip(x, y) {
     tooltip.style.left = `${x}px`;
-    tooltip.style.top = `${y + 3}px`;
+    tooltip.style.top = `${y + 10}px`;
     tooltip.style.display = 'block';
     tooltip.style.transform = 'translateX(-50%)'
 }
