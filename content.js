@@ -31,7 +31,12 @@ document.addEventListener('mouseup', (e) => {
 
     const selected = window.getSelection().toString().trim();
     if (selected.length > 2 && selected.split(' ').length < 16 && !selectionActive) {
-        showTooltip(e.pageX, e.pageY);
+        const range = window.getSelection().getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const x = rect.left + window.scrollX + (rect.width / 2);
+        const y = rect.bottom + window.scrollY;
+        showTooltip(x, y);
+
         selectionActive = true;
     }
     else {
@@ -52,8 +57,9 @@ genCardBtn.addEventListener('click', () => {
 
 function showTooltip(x, y) {
     tooltip.style.left = `${x}px`;
-    tooltip.style.top = `${y}px`;
+    tooltip.style.top = `${y + 3}px`;
     tooltip.style.display = 'block';
+    tooltip.style.transform = 'translateX(-50%)'
 }
 
 function hideTooltip() {
