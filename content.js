@@ -154,9 +154,16 @@ function showLoadingCard(word) {
         overflow: hidden;
         max-height: 100px;
         transition: max-height 0.4s ease;
+        display: flex;
+        flex-direction: column;
     `;
 
     document.body.appendChild(card);
+
+    const cardRect = card.getBoundingClientRect();
+    if (cardRect.right > window.innerWidth) {
+        card.style.left = `${window.innerWidth - card.offsetWidth - 16 + window.scrollX}px`;
+    }
 
     const closeBtn = document.querySelector('#cc-close-btn');
     closeBtn.style.cssText = `
@@ -182,11 +189,14 @@ function showCard(word, sentence, meaning) {
     );
 
     card.innerHTML = `
-        <div id="cc-header" style="display:flex; justify-content:space-between; align-items:center; padding:0 0 8px 0;">
-            <p style="font-size:22px; font-weight:500; color:#111; margin:0;">${word}</p>
+        <div id="cc-header" style="display:flex; justify-content:space-between; align-items:flex-start; padding:0 0 8px 0;">
+            <div style="display:flex; flex-direction:column;">
+                <p style="font-size:10px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Word</p>
+                <p style="font-size:22px; font-weight:500; color:#111; margin:0;">${word}</p>
+            </div>
             <button id="cc-close-btn" style="background:none; border:none; font-size:25px; color:#999; cursor:pointer;">&times;</button>
         </div>
-        <div id="cc-body" style="overflow-y:auto; max-height:250px;">
+        <div id="cc-body" style="flex:1; overflow-y:auto; min-height:0;">
             <p class="cc-label">Original sentence</p>
             <p class="cc-sentence">${boldedSentence}</p>
             <p class="cc-label">Meaning in context</p>
@@ -202,7 +212,7 @@ function showCard(word, sentence, meaning) {
     card.querySelector(".cc-meaning").style.cssText = `font-size:13px; color:#111; line-height:1.6; margin:0 0 16px;`;
 
     const saveBtn = card.querySelector("#cc-save-btn");
-    saveBtn.style.cssText = `width:100%; padding:8px; font-size:13px; border-radius:8px; background:white; border:0.5px solid #ccc; color:#111; cursor:pointer;`;
+    saveBtn.style.cssText = `width:100%; padding:8px; font-size:13px; border-radius:8px; background:white; border:0.5px solid #ccc; color:#111; cursor:pointer; box-sizing:border-box; text-align:center;`;
     saveBtn.addEventListener("click", () => {
         const cardData = {
             word,
@@ -228,8 +238,16 @@ function showCard(word, sentence, meaning) {
     closeBtn.addEventListener('click', () => card.remove());
 
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            card.style.maxHeight = '300px';
-        });
+    requestAnimationFrame(() => {
+        card.style.maxHeight = '300px';
+        
+        setTimeout(() => {
+            const cardRect = card.getBoundingClientRect();
+            if (cardRect.bottom > window.innerHeight) {
+                const y = parseInt(card.style.top);
+                card.style.top = `${y - (cardRect.bottom - window.innerHeight) - 16}px`;
+            }
+        }, 400);
     });
+});
 }
