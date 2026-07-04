@@ -97,7 +97,7 @@ async function generateContextCard(word, context) {
     }
 
     const meaning = data.candidates[0].content.parts[0].text;
-    showCard(word, extractSentence(cleanContext, word), meaning);
+    showCard(word, extractSentence(context.trim(), word), meaning);
 }
 
 function extractSentence(paragraph, word) {
