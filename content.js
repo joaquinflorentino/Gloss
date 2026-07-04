@@ -135,9 +135,11 @@ function showLoadingCard(word) {
     const card = document.createElement('div');
     card.id = 'contextcard-card';
     card.innerHTML = `
-        <button id="cc-close-btn">&times;</button>
-        <p class="cc-word" style="font-size:22px; font-weight:500; color:#111; margin: 0 0 4px;">${word}</p>
-        <p id="cc-loading-text" style="font-size:13px; color:#999; margin:0;">Generating...</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:0; padding:0;">
+            <p style="font-size:22px; font-weight:500; color:#111; margin:0; padding:0; line-height:1.2; font-family:sans-serif;">${word}</p>
+            <button id="cc-close-btn" style="background:none; border:none; font-size:25px; color:#999; cursor:pointer; flex-shrink:0; padding:0; margin:0; line-height:1;">&times;</button>
+        </div>
+        <p id="cc-loading-text" style="font-size:13px; color:#999; margin:6px 0 0 0; padding:0; font-family:sans-serif; line-height:1.4;">Generating...</p>
     `;
     card.style.cssText = `
         position: absolute;
