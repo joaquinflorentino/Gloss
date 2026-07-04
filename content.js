@@ -151,7 +151,7 @@ function showLoadingCard(word) {
         z-index: 999999;
         font-family: sans-serif;
         box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-        overflow-y: auto;
+        overflow: hidden;
         max-height: 100px;
         transition: max-height 0.4s ease;
     `;
@@ -182,19 +182,22 @@ function showCard(word, sentence, meaning) {
     );
 
     card.innerHTML = `
-        <button id="cc-close-btn">&times;</button>
-        <p class="cc-label">Word</p>
-        <p class="cc-word">${word}</p>
-        <p class="cc-label">Original sentence</p>
-        <p class="cc-sentence">${boldedSentence}</p>
-        <p class="cc-label">Meaning in context</p>
-        <p class="cc-meaning">${meaning}</p>
-        <button id="cc-save-btn">Save card</button>`;
+        <div id="cc-header" style="display:flex; justify-content:space-between; align-items:center; padding:0 0 8px 0;">
+            <p style="font-size:22px; font-weight:500; color:#111; margin:0;">${word}</p>
+            <button id="cc-close-btn" style="background:none; border:none; font-size:25px; color:#999; cursor:pointer;">&times;</button>
+        </div>
+        <div id="cc-body" style="overflow-y:auto; max-height:250px;">
+            <p class="cc-label">Original sentence</p>
+            <p class="cc-sentence">${boldedSentence}</p>
+            <p class="cc-label">Meaning in context</p>
+            <p class="cc-meaning">${meaning}</p>
+            <button id="cc-save-btn">Save card</button>
+        </div>
+    `;
     
     card.querySelectorAll(".cc-label").forEach(el => {
         el.style.cssText = `font-size:10px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px;`;
     });
-    card.querySelector(".cc-word").style.cssText = `font-size:22px; font-weight:500; color:#111; margin:0 0 14px;`;
     card.querySelector(".cc-sentence").style.cssText = `font-size:13px; color:#555; line-height:1.6; margin:0 0 14px; border-left:2px solid #ddd; padding-left:10px;`;
     card.querySelector(".cc-meaning").style.cssText = `font-size:13px; color:#111; line-height:1.6; margin:0 0 16px;`;
 
