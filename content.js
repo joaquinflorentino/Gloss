@@ -69,35 +69,12 @@ function hideTooltip() {
 }
 
 async function generateContextCard(word, context) {
-    const cleanContext = context.replace(/[^\x00-\x7F]/g, "[symbol]").trim();
-
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`,
-        {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `"${word}" was highlighted in this text: "${cleanContext}"
-                        
-                        Explain what "${word}" means in this specific context in 2-3 simple sentences for a non-native English speaker.
-                        Plain text only, no formatting.`
-                    }]
-                }]
-            })
-        }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        console.error('API error:', JSON.stringify(data));
-        return;
-    }
-
-    const meaning = data.candidates[0].content.parts[0].text;
-    showCard(word, extractSentence(context.trim(), word), meaning , context.trim());
+    chrome.storage.local.get('glossLang', (result) => {
+        const lang = result.glossLang || 'English';
+        generateMeaning(word, context, lang, (meaning) => {
+            showCard(word, extractSentence(context.trim(), word), meaning, context.trim());
+        });
+    });
 }
 
 function extractSentence(paragraph, word) {
