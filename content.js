@@ -97,7 +97,7 @@ async function generateContextCard(word, context) {
     }
 
     const meaning = data.candidates[0].content.parts[0].text;
-    showCard(word, extractSentence(context.trim(), word), meaning);
+    showCard(word, extractSentence(context.trim(), word), meaning , context.trim());
 }
 
 function extractSentence(paragraph, word) {
@@ -181,7 +181,7 @@ function showLoadingCard(word) {
     closeBtn.addEventListener('click', () => card.remove());
 }
 
-function showCard(word, sentence, meaning) {
+function showCard(word, sentence, meaning, context) {
     const card = document.getElementById('contextcard-card');
     if (!card) return
 
@@ -196,7 +196,21 @@ function showCard(word, sentence, meaning) {
                 <p style="font-size:10px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Word</p>
                 <p style="font-size:22px; font-weight:500; color:#111; margin:0;">${word}</p>
             </div>
-            <button id="cc-close-btn" style="background:none; border:none; font-size:25px; color:#999; cursor:pointer;">&times;</button>
+            <div style="display:flex; flex-direction:row; align-items:center; gap:8px;">
+                <select id="cc-lang-select" style="font-size:11px; border:0.5px solid #ddd; border-radius:6px; padding:2px 4px; color:#555; background:white; cursor:pointer;">
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="Mandarin">Mandarin</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="French">French</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Korean">Korean</option>
+                    <option value="German">German</option>
+                </select>
+                <button id="cc-close-btn" style="background:none; border:none; font-size:25px; color:#999; cursor:pointer;">&times;</button>
+            </div>
         </div>
         <div id="cc-body" style="flex:1; overflow-y:auto; min-height:0;">
             <p class="cc-label">Original sentence</p>
@@ -236,20 +250,65 @@ function showCard(word, sentence, meaning) {
     });
 
     const closeBtn = card.querySelector('#cc-close-btn');
-    closeBtn.style.cssText = `position:absolute; top:10px; right:12px; background:none; border:none; font-size:25px; color:#999; cursor:pointer;`;
+    closeBtn.style.cssText = `top:10px; right:12px; background:none; border:none; font-size:25px; color:#999; cursor:pointer;`;
     closeBtn.addEventListener('click', () => card.remove());
 
-    requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-        card.style.maxHeight = '300px';
-        
-        setTimeout(() => {
-            const cardRect = card.getBoundingClientRect();
-            if (cardRect.bottom > window.innerHeight) {
-                const y = parseInt(card.style.top);
-                card.style.top = `${y - (cardRect.bottom - window.innerHeight) - 16}px`;
-            }
-        }, 400);
+    const langSelect = card.querySelector('#cc-lang-select');
+
+    chrome.storage.local.get('glossLang', (result) => {
+        if (result.glossLang) langSelect.value = result.glossLang;
     });
-});
+
+    langSelect.addEventListener('change', () => {
+        const lang = langSelect.value;
+        chrome.storage.local.set({ glossLang: lang });
+
+        const meaningEl = card.querySelector('.cc-meaning');
+        meaningEl.textContent = 'Generating...';
+        meaningEl.style.color = '#999';
+
+        generateMeaning(word, context, lang, (newMeaning) => {
+            meaningEl.textContent = newMeaning;
+            meaningEl.style.color = '#111';
+        });
+    });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            card.style.maxHeight = '300px';
+            
+            setTimeout(() => {
+                const cardRect = card.getBoundingClientRect();
+                if (cardRect.bottom > window.innerHeight) {
+                    const y = parseInt(card.style.top);
+                    card.style.top = `${y - (cardRect.bottom - window.innerHeight) - 16}px`;
+                }
+            }, 400);    
+        });
+    });
+}
+
+async function generateMeaning(word, context, language, callback) {
+    const cleanContext = context.replace(/[^\x00-\x7F]/g, "[symbol]").trim();
+
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`,
+        {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `"${word}" was highlighted in this text: "${cleanContext}"
+                        
+                        Explain what "${word}" means in this specific context in 2-3 simple sentences. Respond in ${language}. Plain text only, no formatting.`
+                    }]
+                }]
+            })
+        }
+    );
+
+    const data = await response.json();
+    if (!response.ok) return;
+    callback(data.candidates[0].content.parts[0].text);
 }
