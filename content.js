@@ -162,11 +162,6 @@ function showCard(word, sentence, meaning, context) {
     const card = document.getElementById('contextcard-card');
     if (!card) return
 
-    const boldedSentence = sentence.replace(
-        new RegExp(`(${word})`, "gi"),
-        `<span style="font-weight:600; color:#111;">$1</span>`
-    );
-
     card.innerHTML = `
         <div id="cc-header" style="display:flex; justify-content:space-between; align-items:flex-start; padding:0 0 8px 0;">
             <div style="display:flex; flex-direction:column;">
@@ -190,8 +185,6 @@ function showCard(word, sentence, meaning, context) {
             </div>
         </div>
         <div id="cc-body" style="flex:1; overflow-y:auto; min-height:0;">
-            <p class="cc-label">Original sentence</p>
-            <p class="cc-sentence">${boldedSentence}</p>
             <p class="cc-label">Meaning in context</p>
             <p class="cc-meaning">${meaning}</p>
             <button id="cc-save-btn">Save card</button>
@@ -201,7 +194,6 @@ function showCard(word, sentence, meaning, context) {
     card.querySelectorAll(".cc-label").forEach(el => {
         el.style.cssText = `font-size:10px; font-weight:500; color:#999; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px;`;
     });
-    card.querySelector(".cc-sentence").style.cssText = `font-size:13px; color:#555; line-height:1.6; margin:0 0 14px; border-left:2px solid #ddd; padding-left:10px;`;
     card.querySelector(".cc-meaning").style.cssText = `font-size:13px; color:#111; line-height:1.6; margin:0 0 16px;`;
 
     const saveBtn = card.querySelector("#cc-save-btn");
