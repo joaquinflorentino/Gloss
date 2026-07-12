@@ -222,6 +222,35 @@ function showCard(word, sentence, meaning, context) {
     closeBtn.style.cssText = `top:10px; right:12px; background:none; border:none; font-size:25px; color:#999; cursor:pointer;`;
     closeBtn.addEventListener('click', () => card.remove());
 
+    const header = card.querySelector('#cc-header');
+    header.style.cursor = 'grab';
+
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    header.addEventListener('mousedown', (e) => {
+        if (e.target === closeBtn || e.target === langSelect) return;
+        isDragging = true;
+        dragOffsetX = e.clientX - card.getBoundingClientRect().left;
+        dragOffsetY = e.clientY - card.getBoundingClientRect().top;
+        header.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        card.style.left = `${e.clientX - dragOffsetX + window.scrollX}px`;
+        card.style.top = `${e.clientY - dragOffsetY + window.scrollY}px`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            header.style.cursor = 'grab';
+        }
+    });
+
     const langSelect = card.querySelector('#cc-lang-select');
 
     chrome.storage.local.get('glossLang', (result) => {
