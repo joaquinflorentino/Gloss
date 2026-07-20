@@ -301,7 +301,7 @@ async function generateMeaning(word, context, language, callback) {
                     parts: [{
                         text: `"${word}" was highlighted in this text: "${cleanContext}"
                         
-                        Explain what "${word}" means in this specific context in 2-3 simple sentences. Respond in ${language}. Plain text only, no formatting.`
+                        Explain what "${word}" means in this specific context in 2-3 simple sentences. Use simple, everyday language. Respond in ${language}. Plain text only, no formatting.`
                     }]
                 }]
             })
