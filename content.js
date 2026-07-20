@@ -1,3 +1,5 @@
+console.log(typeof chrome)
+
 const tooltip = document.createElement('div');
 tooltip.id = 'gloss-tooltip';
 tooltip.innerHTML = `<button id="gencard-btn">✦ Generate Card</button>`
@@ -23,7 +25,7 @@ let selectionActive = false;
 
 document.addEventListener('mouseup', (e) => {
     chrome.storage.local.get('glossActive', (result) => {
-        if (!result.glossActive) return;
+        if (result.glossActive === false) return;
         if (tooltip.contains(e.target)) {
             hideTooltip();
             return;
